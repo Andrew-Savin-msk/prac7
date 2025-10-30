@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'features/goals/screens/goals_list_screen.dart';
+import 'features/goals/services/goal_service.dart';
+import 'features/goals/app_router.dart';
 
 void main() {
-  runApp(const GoalManagerApp());
+  final goalService = GoalService(); // единый инстанс сервиса
+  runApp(MyApp(goalService: goalService));
 }
 
-class GoalManagerApp extends StatelessWidget {
-  const GoalManagerApp({super.key});
+class MyApp extends StatelessWidget {
+  final GoalService goalService;
+  const MyApp({super.key, required this.goalService});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Менеджер целей',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      home: const GoalsListScreen(),
+    final router = buildRouter(goalService); // см. app_router.dart
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Goals',
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+      routerConfig: router, // <-- ключевая строка
     );
   }
 }
