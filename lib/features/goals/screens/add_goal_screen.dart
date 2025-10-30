@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../app_router.dart';
 import '../models/goal_model.dart';
 import '../services/goal_service.dart';
 import 'goals_list_screen.dart';
@@ -54,12 +56,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
 
     widget.goalService.addGoal(goal);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => GoalsListScreen(goalService: widget.goalService),
-      ),
-    );
+    context.push(Routes.goalsList);
   }
 
   @override
@@ -69,7 +66,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Новая цель'),
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
+        leading: BackButton(onPressed: () => context.pop()),
       ),
       body: Form(
         key: _formKey,

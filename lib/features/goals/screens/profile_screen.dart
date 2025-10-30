@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../app_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class Achievement {
@@ -66,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           title: const Text('Профиль'),
-          leading: BackButton(onPressed: () => Navigator.pop(context)),
+          leading: BackButton(onPressed: () => context.pop()),
       ),
       body: achievements.isEmpty
           ? const _EmptyState()

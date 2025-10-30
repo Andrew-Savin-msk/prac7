@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../app_router.dart';
 import '../models/goal_model.dart';
 import '../widgets/progress_text.dart';
 
@@ -32,7 +34,7 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
     return Scaffold(
       appBar: AppBar(
           title: Text(goal.title),
-          leading: BackButton(onPressed: () => Navigator.pop(context)),
+          leading: BackButton(onPressed: () => context.pop()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../app_router.dart';
 import '../models/goal_model.dart';
 import '../services/goal_service.dart';
 import '../widgets/goals_stats_card.dart';
@@ -10,8 +12,6 @@ import 'goal_detail_screen.dart';
 import 'profile_screen.dart';
 
 class GoalsListScreen extends StatefulWidget {
-  // Можно передать общий экземпляр сервиса ИЛИ оставить пустым —
-  // тогда внутри создастся свой (чтобы не ломать main.dart).
   final GoalService? goalService;
   const GoalsListScreen({super.key, this.goalService});
 
@@ -32,7 +32,7 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
         content: const Text('Вы уверены, что хотите удалить эту цель?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: const Text('Отмена'),
           ),
           ElevatedButton(
@@ -45,42 +45,6 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
         ],
       ),
     );
-  }
-
-  void _clearAll() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Очистить все цели?'),
-        content: const Text('Это действие удалит все цели без возможности восстановления.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-          FilledButton(
-            onPressed: () {
-              setState(() => _goalService.goals.clear());
-              Navigator.pop(context);
-            },
-            child: const Text('Удалить всё'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _sortGoals(String type) {
-    setState(() {
-      _sortBy = type;
-      if (type == 'date') {
-        _goalService.goals.sort((a, b) => a.deadline.compareTo(b.deadline));
-      } else if (type == 'progress') {
-        _goalService.goals.sort((a, b) => b.progress.compareTo(a.progress));
-      } else if (type == 'name') {
-        _goalService.goals.sort((a, b) => a.title.compareTo(b.title));
-      }
-    });
   }
 
   List<Goal> _filteredGoals() {
@@ -102,22 +66,14 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
             tooltip: 'Выполненные',
             icon: const Icon(Icons.done_all),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CompletedGoalsScreen(goalService: _goalService),
-                ),
-              );
+              context.push(Routes.completed);
             },
           ),
           IconButton(
             tooltip: 'Профиль',
             icon: const Icon(Icons.person),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
+              context.push(Routes.profile);
             },
           ),
         ],
@@ -137,10 +93,7 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
                 goals: goals,
                 onDelete: _deleteGoal,
                 onTap: (goal) async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => GoalDetailScreen(goal: goal)),
-                  );
+                  await context.push(Routes.goalDetail, extra: goal);
                   setState(() {});
                 },
               ),
@@ -157,11 +110,6 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
   }
 
   void _addGoal() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AddGoalScreen(goalService: _goalService),
-      ),
-    );
+    context.push(Routes.addGoal);
   }
 }

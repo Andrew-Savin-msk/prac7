@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../app_router.dart';
 import '../models/goal_model.dart';
 import '../services/goal_service.dart';
 import '../widgets/goal_card.dart';
@@ -61,7 +63,7 @@ class _CompletedGoalsScreenState extends State<CompletedGoalsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Выполненные цели'),
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
+        leading: BackButton(onPressed: () => context.pop()),
         actions: [
           IconButton(
             tooltip: 'Удалить все',
