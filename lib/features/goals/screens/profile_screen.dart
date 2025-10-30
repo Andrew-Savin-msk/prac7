@@ -64,7 +64,10 @@ class ProfileScreen extends StatelessWidget {
     final achievements = AchievementService().getAchievements();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Профиль')),
+      appBar: AppBar(
+          title: const Text('Профиль'),
+          leading: BackButton(onPressed: () => Navigator.pop(context)),
+      ),
       body: achievements.isEmpty
           ? const _EmptyState()
           : ListView.separated(

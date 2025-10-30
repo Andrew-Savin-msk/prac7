@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/goal_model.dart';
 import '../services/goal_service.dart';
-import '../widgets/add_goal_dialog.dart';
 import '../widgets/goals_stats_card.dart';
 import '../widgets/goals_search_bar.dart';
 import '../widgets/goals_list_view.dart';
@@ -10,25 +9,32 @@ import 'completed_goals_screen.dart';
 import 'goal_detail_screen.dart';
 import 'profile_screen.dart';
 
-
 class GoalsListScreen extends StatefulWidget {
-  const GoalsListScreen({super.key});
+  // Можно передать общий экземпляр сервиса ИЛИ оставить пустым —
+  // тогда внутри создастся свой (чтобы не ломать main.dart).
+  final GoalService? goalService;
+  const GoalsListScreen({super.key, this.goalService});
 
   @override
   State<GoalsListScreen> createState() => _GoalsListScreenState();
 }
 
 class _GoalsListScreenState extends State<GoalsListScreen> {
-  final GoalService _goalService = GoalService();
+  late final GoalService _goalService = widget.goalService ?? GoalService();
   final TextEditingController _searchController = TextEditingController();
   String _sortBy = 'none';
 
-  void _addGoal() async {
-    final goal = await Navigator.push<Goal>(
-             context,
-            MaterialPageRoute(builder: (_) => const AddGoalScreen()),
-            );
-        if (goal != null) setState(() => _goalService.addGoal(goal));
+  void _addGoal() {
+    // Открываем экран создания и передаём ТОТ ЖЕ сервис.
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddGoalScreen(goalService: _goalService),
+      ),
+    );
+    // Важно: после сохранения внутри AddGoalScreen произойдёт pushReplacement
+    // на НОВЫЙ экземпляр GoalsListScreen с тем же сервисом, так что обновлённый список
+    // сразу будет на экране.
   }
 
   void _deleteGoal(int index) {
@@ -65,12 +71,12 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Отмена'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () {
               setState(() => _goalService.goals.clear());
               Navigator.pop(context);
             },
-            child: const Text('Очистить всё'),
+            child: const Text('Удалить всё'),
           ),
         ],
       ),
@@ -114,16 +120,16 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
                 MaterialPageRoute(
                   builder: (_) => CompletedGoalsScreen(goalService: _goalService),
                 ),
-              ).then((_) => setState(() {}));
+              );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.person),
             tooltip: 'Профиль',
+            icon: const Icon(Icons.person),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
             },
           ),
@@ -148,7 +154,10 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
         child: Column(
           children: [
             GoalsStatsCard(goalService: _goalService),
-            GoalsSearchBar(controller: _searchController, onChanged: () => setState(() {})),
+            GoalsSearchBar(
+              controller: _searchController,
+              onChanged: () => setState(() {}),
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: GoalsListView(
@@ -157,9 +166,9 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
                 onTap: (goal) async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GoalDetailScreen(goal: goal)),
+                    MaterialPageRoute(builder: (_) => GoalDetailScreen(goal: goal)),
                   );
-                  setState(() {});
+                  setState(() {}); // вернувшись с деталей — обновим список
                 },
               ),
             ),

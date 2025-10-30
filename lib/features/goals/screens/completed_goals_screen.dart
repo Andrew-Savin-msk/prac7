@@ -61,6 +61,7 @@ class _CompletedGoalsScreenState extends State<CompletedGoalsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Выполненные цели'),
+        leading: BackButton(onPressed: () => Navigator.pop(context)),
         actions: [
           IconButton(
             tooltip: 'Удалить все',

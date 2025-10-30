@@ -30,7 +30,10 @@ class _GoalDetailScreenState extends State<GoalDetailScreen> {
     final subtasks = goal.subtasks;
 
     return Scaffold(
-      appBar: AppBar(title: Text(goal.title)),
+      appBar: AppBar(
+          title: Text(goal.title),
+          leading: BackButton(onPressed: () => Navigator.pop(context)),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
