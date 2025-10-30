@@ -56,7 +56,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
 
     widget.goalService.addGoal(goal);
 
-    context.push(Routes.goalsList);
+    context.pushReplacement(Routes.goalsList);
   }
 
   @override
