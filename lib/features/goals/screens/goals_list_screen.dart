@@ -24,19 +24,6 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _sortBy = 'none';
 
-  void _addGoal() {
-    // Открываем экран создания и передаём ТОТ ЖЕ сервис.
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AddGoalScreen(goalService: _goalService),
-      ),
-    );
-    // Важно: после сохранения внутри AddGoalScreen произойдёт pushReplacement
-    // на НОВЫЙ экземпляр GoalsListScreen с тем же сервисом, так что обновлённый список
-    // сразу будет на экране.
-  }
-
   void _deleteGoal(int index) {
     showDialog(
       context: context,
@@ -133,20 +120,6 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
               );
             },
           ),
-          PopupMenuButton<String>(
-            onSelected: _sortGoals,
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'none', child: Text('Без сортировки')),
-              PopupMenuItem(value: 'name', child: Text('По названию')),
-              PopupMenuItem(value: 'date', child: Text('По дате')),
-              PopupMenuItem(value: 'progress', child: Text('По прогрессу')),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_forever),
-            tooltip: 'Очистить всё',
-            onPressed: _goalService.goals.isEmpty ? null : _clearAll,
-          ),
         ],
       ),
       body: Padding(
@@ -168,7 +141,7 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
                     context,
                     MaterialPageRoute(builder: (_) => GoalDetailScreen(goal: goal)),
                   );
-                  setState(() {}); // вернувшись с деталей — обновим список
+                  setState(() {});
                 },
               ),
             ),
@@ -179,6 +152,15 @@ class _GoalsListScreenState extends State<GoalsListScreen> {
         onPressed: _addGoal,
         label: const Text('Новая цель'),
         icon: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _addGoal() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddGoalScreen(goalService: _goalService),
       ),
     );
   }

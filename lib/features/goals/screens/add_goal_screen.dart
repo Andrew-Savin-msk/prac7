@@ -1,9 +1,11 @@
-
 import 'package:flutter/material.dart';
 import '../models/goal_model.dart';
+import '../services/goal_service.dart';
+import 'goals_list_screen.dart';
 
 class AddGoalScreen extends StatefulWidget {
-  const AddGoalScreen({super.key});
+  final GoalService goalService;
+  const AddGoalScreen({super.key, required this.goalService});
 
   @override
   State<AddGoalScreen> createState() => _AddGoalScreenState();
@@ -44,8 +46,20 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       );
       return;
     }
-    final goal = Goal(title: _titleController.text.trim(), deadline: _deadline!);
-    Navigator.of(context).pop<Goal>(goal);
+
+    final goal = Goal(
+      title: _titleController.text.trim(),
+      deadline: _deadline!,
+    );
+
+    widget.goalService.addGoal(goal);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GoalsListScreen(goalService: widget.goalService),
+      ),
+    );
   }
 
   @override
@@ -55,12 +69,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Новая цель'),
-        actions: [
-          TextButton(
-            onPressed: canSave ? _save : null,
-            child: const Text('Создать'),
-          ),
-        ],
+        leading: BackButton(onPressed: () => Navigator.pop(context)),
       ),
       body: Form(
         key: _formKey,
@@ -73,11 +82,14 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               textInputAction: TextInputAction.next,
               decoration: const InputDecoration(
                 labelText: 'Название цели',
-                hintText: 'Например: Выучить Dart на базовом уровне',
+                hintText: 'Например: Выучить основы Dart',
                 border: OutlineInputBorder(),
               ),
-              validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Введите название' : null,
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return 'Введите название';
+                if (v.trim().length < 3) return 'Минимум 3 символа';
+                return null;
+              },
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 16),
@@ -86,12 +98,14 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
               title: const Text('Срок выполнения'),
               subtitle: Text(
                 _deadline == null
-                    ? 'Не выбран'
-                    : '${_deadline!.day}.${_deadline!.month}.${_deadline!.year}',
+                    ? 'Не выбрано'
+                    : '${_deadline!.day.toString().padLeft(2, '0')}.'
+                    '${_deadline!.month.toString().padLeft(2, '0')}.'
+                    '${_deadline!.year}',
               ),
-              trailing: OutlinedButton.icon(
+              trailing: FilledButton.icon(
                 onPressed: _pickDate,
-                icon: const Icon(Icons.date_range),
+                icon: const Icon(Icons.event),
                 label: const Text('Выбрать дату'),
               ),
             ),
