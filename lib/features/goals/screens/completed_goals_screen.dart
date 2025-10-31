@@ -18,7 +18,6 @@ class CompletedGoalsScreen extends StatefulWidget {
 
 class _CompletedGoalsScreenState extends State<CompletedGoalsScreen> {
   List<MapEntry<int, Goal>> _completedEntries() {
-    // keep original indices to delete correctly from the backing list
     return widget.goalService.goals.asMap().entries
         .where((e) => e.value.isCompleted)
         .toList();
